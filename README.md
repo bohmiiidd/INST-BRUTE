@@ -25,3 +25,9 @@ Features:
         Includes error handling for request failures and exceptions to ensure the script continues running even if individual requests fail.
 
 Important Note: Brute-forcing login credentials is against Instagram’s terms of service and can be illegal. Use this script responsibly and only in authorized scenarios, such as for educational purposes or on your own accounts.
+
+To install the dependencies listed in requirements.txt, you can use the following command:
+
+bash
+
+pip install -r requirements.txt
