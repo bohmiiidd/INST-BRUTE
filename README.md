@@ -1,34 +1,99 @@
 # INST-BRUTE
 This Python script performs a brute-force attack on the Instagram login page to attempt to guess the correct password for a given username. It utilizes a combination of Selenium and requests to mimic human behavior and make the brute-force attempts less detectable
 
-Features:
 
-    Dynamic Headers and User Agents:
-        The script rotates through a list of user agents to simulate requests from different browsers, making the attacks appear more like genuine user interactions.
+## Features
 
-    Proxy Rotation:
-        To further obscure the attack and avoid IP blocking, the script rotates through a list of proxies. Each request can be sent through a different proxy, which helps in maintaining anonymity and bypassing rate limits.
+#### Dynamic Headers and User Agents
 
-    Headless Browser Simulation:
-        Uses Selenium with a headless Chrome browser to interact with the Instagram login page. This approach mimics real user behavior, such as delays between actions, and captures necessary cookies for authentication.
+```http
+  Headers:
+    User-Agent: (Randomly chosen from a list)
+    X-Requested-With: XMLHttpRequest
+    Referer: https://www.instagram.com/accounts/login/
+    Origin: https://www.instagram.com
+```
 
-    CSRF Token Extraction:
-        Extracts the CSRF token required for form submissions from the initial login page request, ensuring that the login attempts are valid and accepted by Instagram.
+| Parameter     | Type     | Description                                                        |
+| :------------ | :------- | :----------------------------------------------------------------- |
+| `User-Agent`  | `string` | **Required**. Rotates through a list of user agents to simulate requests from different browsers. |
+| `Referer`     | `string` | **Required**. The referrer URL to mimic legitimate traffic.          |
+| `Origin`      | `string` | **Required**. The origin of the request to match Instagram’s expected headers. |
 
-    Password File Handling:
-        Reads passwords from a file and tries each one in sequence. If a password is found, the script saves the response from Instagram into an HTML file for review.
+#### Proxy Rotation
 
-    Verbose Output:
-        When enabled, prints detailed information about each login attempt, including the password being tried, status codes, and response lengths. This feature aids in monitoring the progress of the brute-force attack.
+```http
+  Proxy:
+    http://proxy_ip:proxy_port
+```
 
-    Error Handling:
-        Includes error handling for request failures and exceptions to ensure the script continues running even if individual requests fail.
+| Parameter | Type     | Description                                                        |
+| :-------- | :------- | :----------------------------------------------------------------- |
+| `Proxy`   | `string` | **Required**. Rotates through a list of proxies to avoid IP blocking and maintain anonymity. |
 
-Important Note: Brute-forcing login credentials is against Instagram’s terms of service and can be illegal. Use this script responsibly and only in authorized scenarios, such as for educational purposes or on your own accounts.
+#### Headless Browser Simulation
+
+```http
+  Browser: Chrome (Headless Mode)
+```
+
+| Parameter        | Type     | Description                                                        |
+| :--------------- | :------- | :----------------------------------------------------------------- |
+| `Browser`        | `string` | **Required**. Uses Selenium with a headless Chrome browser to interact with the login page. |
+| `Headless Mode`  | `boolean` | **Required**. Runs the browser in headless mode to avoid GUI.       |
+
+#### CSRF Token Extraction
+
+```http
+  GET /accounts/login/
+```
+
+| Parameter       | Type     | Description                                                        |
+| :-------------- | :------- | :----------------------------------------------------------------- |
+| `CSRF Token`    | `string` | **Required**. Extracts the CSRF token required for form submissions. |
+
+#### Password File Handling
+
+```http
+  POST /accounts/login/ajax/
+```
+
+| Parameter         | Type     | Description                                                        |
+| :---------------- | :------- | :----------------------------------------------------------------- |
+| `Password File`   | `file`   | **Required**. Reads passwords from a file and attempts each one in sequence. |
+| `Response Body`   | `HTML`   | **Optional**. Saves the response from Instagram into an HTML file if login is successful. |
+
+#### Verbose Output
+
+```http
+  Verbose Mode:
+    Prints detailed information about each login attempt.
+```
+
+| Parameter       | Type     | Description                                                        |
+| :-------------- | :------- | :----------------------------------------------------------------- |
+| `Verbose Mode`  | `boolean` | **Optional**. Enables printing of detailed information, including the password attempted, status codes, and response lengths. |
+
+#### Error Handling
+
+```python
+  try:
+      # Attempt login
+  except Exception as e:
+      print(f"Error: {e}")
+```
+
+| Parameter        | Type     | Description                                                        |
+| :--------------- | :------- | :----------------------------------------------------------------- |
+| `Error Handling` | `code`   | **Required**. Includes handling for request failures and exceptions to ensure the script continues running. |
+
+---
+# Important Note ⚠️
+Brute-forcing login credentials is against Instagram’s terms of service and can be illegal. Use this script responsibly and only in authorized scenarios, such as for educational purposes or on your own accounts.
 
 ## requirements
 
- To install the dependencies listed in requirements.txt, you can use the following command:
+To install the dependencies listed in requirements.txt, you can use the following command:
 
 ```bash
 pip install -r requirements.txt
@@ -40,4 +105,3 @@ pip install -r requirements.txt
 ```javascript
 python3 insta_BF_unD.py
 ```
-
